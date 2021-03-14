@@ -17,6 +17,7 @@ library(haven)
 
 
 
+
 d = function(x){                   # usar o in ao invés do ==
   k = ifelse(x==1, 1,
       ifelse(x %in% c(2, 3,4), 2, 
