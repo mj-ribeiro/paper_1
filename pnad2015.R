@@ -56,20 +56,9 @@ r25 = (0.25*w_min)/hr_trab
 # load pnad  2015 ----
 
 
-#pnad15 = readRDS('pnad2015.rds')
-
-#pnad15 = as_tibble(pnad15)   # convert to tibble
-
-#pnad15 = pnad2015pes
-
 
 pnad15 <- read_dta("D:/PNADs/PNAD_DATAZOOM/pnad2015pes.dta")
 
-
-
-#basicStats(t$v4816)
-
-# NAs na variável V4816 = 1.770730e+05
 
 
 # add new column
@@ -174,8 +163,8 @@ data.frame(anos_est, W_i, p_i)
 # Elasticity of time spent at school  (phi) ----
 
 
-eta = 0.25
-beta = 0.69
+eta = 0.103
+beta = 0.231
 c = (1-eta)/beta
 
 s = 0.24*(anos_est/25) 

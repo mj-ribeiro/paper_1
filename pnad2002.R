@@ -151,8 +151,8 @@ data.frame(anos_est, W_i, p_i)
 
 
 
-eta = 0.25
-beta = 0.69
+eta = 0.103
+beta = 0.231
 c = (1-eta)/beta
 
 s = 0.24*(anos_est/25) 
