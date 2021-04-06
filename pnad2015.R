@@ -61,6 +61,10 @@ r25 = (0.25*w_min)/hr_trab
 pnad15 <- read_dta("D:/PNADs/PNAD_DATAZOOM/pnad2015pes.dta")
 
 
+sum((pnad15$v9906 == 3331)*1) 
+
+
+
 
 # add new column
 
@@ -101,6 +105,8 @@ pnad15 = pnad15 %>%
 
 
 
+                
+                
 # HC ----
 
 anos_est =pnad15 %>%
