@@ -17,8 +17,8 @@ library(data.table)
 
 
 
-d = function(x){                   # usar o in ao invés do ==
-  k = ifelse(x==1, 1,
+d = function(x){                   # usar o %in% ao invés do ==
+  k = ifelse(x%in%c(1, 13), 1,
          ifelse(x %in% c(2, 3,4), 2, 
                 ifelse(x %in% seq(5, 12, 1), 3, 0)
          ))
@@ -35,25 +35,22 @@ xx = xx[!xx%in%sy]  # remove o 2010
 
 c = 0
 for(k in xx){
-  cat(strrep("*",20) )
   c = c + 1
   if(k<=2006){info(k, v4703)}
   else{info(k, v4803)}
-  cat('Ano:', k, '\n Progresso:', paste(round(100*c/length(xx),4), '%', sep=''), '\n' )
+  cat('\n Progresso:', paste(round(100*c/length(xx),4), '%', sep=''), '\n' )
+  cat('Fim da Função \n')
+
 }
 
-
-
-
-info(2002, v4703)
 
 
 
 
 
 info = function(year, t_est){
-  cat('\n year=', year)
-  
+  cat(strrep("*",40) )
+  cat('\n Ano:', year)
   t_est = enquo(t_est)                    # Create quosure
   
   inpc = read_excel("inpc.xlsx")
@@ -80,29 +77,34 @@ info = function(year, t_est){
   pnad %>% count(is.na(my_code)==T & is.na(s_hora)==T )
   
   pnad = pnad %>%
-    dplyr::filter(v4817 != 9 &                          # remove military
-                    v4816 != 8 &                        # remove public administration
-                    my_code !=0 &                       # remove NAs 
-                    s_hora > r25 &                      # rule 25%
-                    v4718 < 999999995904)                        
+    dplyr::filter(is.na(v4817)|v4817 != 9 &       # remove military
+                    v4816 != 8 )                   # remove public administration
+  
+  
+  pnad = pnad %>%
+    dplyr::filter(
+        my_code !=0 &                       # remove NAs 
+        s_hora > r25 &                      # rule 25%
+        v4718 < 999999995904) 
+  cat('\n Dimensão da PNAD (L x C):', dim(pnad) )
   
   anos_est =pnad %>%
     group_by(my_code) %>%
     dplyr::summarise(weighted.mean(!!t_est,
                              w = v4729,
-                             na.rm = TRUE) )
+                             na.rm = TRUE), .groups = 'drop' );
   W_i = pnad %>%
     group_by(my_code) %>%
     summarise(weighted.mean(s_hora,
                             w = v4729,
-                            na.rm=T))
+                            na.rm=T), .groups = 'drop')
   soma = pnad %>%
     group_by(my_code) %>%
     count(new, wt = v4729) %>% 
-    summarise(n)
+    summarise(n, .groups = 'drop')
   
   p_i = soma %>%
-    summarise(p_i = n/sum(soma$n))
+    summarise(p_i = n/sum(soma$n), .groups = 'drop')
   
   anos_est[1] = NULL
   W_i[1] = NULL
@@ -110,7 +112,6 @@ info = function(year, t_est){
   colnames(anos_est) = c('anos_est')
   colnames(W_i) = c('W_i')
   colnames(p_i) = c('p_i')
-  
   
   data.frame(anos_est, W_i, p_i)
   
@@ -137,8 +138,6 @@ info = function(year, t_est){
   df = data.frame(W_i, p_i, anos_est, phi, alfa)
   row.names(df) = ocp
   write.xlsx(df, file=paste('data_',substr(year,ifelse((year>=2000 & year<=2009),4,3),4), '.xlsx', sep=''))
-
-  print('Fim da Função')
 
 }
 
